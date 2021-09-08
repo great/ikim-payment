@@ -33,22 +33,22 @@ class CardTransactionService(
 
         val body = PaymentMessageBodyBuilder.payMessageBody(cardData)
         val message = PaymentMessageBuilder.messageWithHeader(uniqueId, body)
-        val x = apiRepository.save(CardPaymentApi(uniqueId, PaymentType.PAYMENT, message))
+        val transaction = apiRepository.save(CardPaymentApi(uniqueId, PaymentType.PAYMENT, message))
             .also { paymentLogRepository.save(CardPaymentLog(uniqueId, cardData)) }
 
-        return uniqueId to x.message
+        return uniqueId to transaction.message
     }
 
     @Transactional
     fun requestCancel(originalUniqueId: String, cancelAmount: PaymentAmount): Pair<String, String> {
         val uniqueId = generator.next()
+
         val canceled = refundLogRepository.findByPaidUniqueId(originalUniqueId)
         if (canceled?.paidUniqueId == originalUniqueId) {
             throw IllegalArgumentException("이미 취소한 거래입니다")
         }
 
         val paid = paymentLogRepository.findByIdOrNull(originalUniqueId)
-
         if (cancelAmount != paid?.paymentAmount()) {
             throw IllegalArgumentException("취소 요청한 금액/부가세가 결제 정보와 일치하지 않습니다.")
         }
@@ -56,10 +56,10 @@ class CardTransactionService(
         val refund = CardRefundData(paid, paid.cardInfoUsing(encryptionTool))
         val body = PaymentMessageBodyBuilder.refundMessageBody(refund)
         val message = PaymentMessageBuilder.messageWithHeader(uniqueId, body)
-        val x = apiRepository.save(CardPaymentApi(uniqueId, PaymentType.CANCEL, message))
+        val transaction = apiRepository.save(CardPaymentApi(uniqueId, PaymentType.CANCEL, message))
             .also { refundLogRepository.save(CardRefundLog(uniqueId, paid.uniqueId)) }
 
-        return uniqueId to x.message
+        return uniqueId to transaction.message
     }
 
     @Transactional
