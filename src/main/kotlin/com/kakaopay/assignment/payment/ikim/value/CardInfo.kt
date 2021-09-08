@@ -8,6 +8,10 @@ class CardInfo(
     val expiry: String,
     val cvc: String,
 ) {
+    companion object {
+        private const val MASKING_RANGE_HEAD = 6
+        private const val MASKING_RANGE_TAIL = 3
+    }
     init {
         require(cardNo.isNumeric()) { "카드 번호는 숫자 형식이어야 합니다" }
         require(cardNo.length in 10..20 ) { "카드 번호는 10자 이상 20자 이하여야 합니다" }
@@ -18,4 +22,12 @@ class CardInfo(
     }
 
     fun encryptWith(aesTool: EncryptionTool) = aesTool.encrypt("$cardNo|$expiry|$cvc")
+
+    val maskedCardNo by lazy {
+        StringBuilder()
+            .append(cardNo.substring(0, MASKING_RANGE_HEAD))
+            .append("#".repeat(cardNo.length - MASKING_RANGE_HEAD - MASKING_RANGE_TAIL))
+            .append(cardNo.substring(cardNo.length - MASKING_RANGE_TAIL))
+            .toString()
+    }
 }

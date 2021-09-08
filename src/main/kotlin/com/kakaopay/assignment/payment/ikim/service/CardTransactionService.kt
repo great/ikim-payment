@@ -2,6 +2,7 @@ package com.kakaopay.assignment.payment.ikim.service
 
 import com.kakaopay.assignment.payment.ikim.builder.CardPaymentData
 import com.kakaopay.assignment.payment.ikim.builder.CardRefundData
+import com.kakaopay.assignment.payment.ikim.controller.response.PaymentInquiryResponse
 import com.kakaopay.assignment.payment.ikim.domain.entity.CardPaymentApi
 import com.kakaopay.assignment.payment.ikim.domain.entity.CardPaymentLog
 import com.kakaopay.assignment.payment.ikim.domain.entity.CardRefundLog
@@ -16,6 +17,7 @@ import com.kakaopay.assignment.payment.ikim.value.PaymentAmount
 import com.kakaopay.assignment.payment.ikim.value.PaymentType
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
+import java.lang.RuntimeException
 import javax.transaction.Transactional
 
 @Service
@@ -60,5 +62,18 @@ class CardTransactionService(
             .also { refundLogRepository.save(CardRefundLog(uniqueId, paid.uniqueId)) }
 
         return uniqueId to x.message
+    }
+
+    @Transactional
+    fun inquirePayment(uniqueId: String): PaymentResult {
+        val paid = paymentLogRepository.findByIdOrNull(uniqueId) ?: throw RuntimeException("not exist")
+        val refunded = refundLogRepository.findByPaidUniqueId(uniqueId)
+
+        return PaymentResult(
+            paid.uniqueId,
+            paid.cardInfoUsing(encryptionTool),
+            if (refunded == null) PaymentType.PAYMENT else PaymentType.CANCEL,
+            paid.paymentAmount()
+        )
     }
 }

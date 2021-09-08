@@ -1,4 +1,4 @@
-package com.kakaopay.assignment.payment.ikim.controller.response
+package com.kakaopay.assignment.payment.ikim.service
 
 import com.kakaopay.assignment.payment.ikim.value.CardInfo
 import com.kakaopay.assignment.payment.ikim.value.PaymentAmount

@@ -6,7 +6,8 @@ import com.kakaopay.assignment.payment.ikim.controller.parameter.cancelAmount
 import com.kakaopay.assignment.payment.ikim.controller.parameter.cardInfo
 import com.kakaopay.assignment.payment.ikim.controller.parameter.cardPayment
 import com.kakaopay.assignment.payment.ikim.controller.response.BaseResponse
-import com.kakaopay.assignment.payment.ikim.controller.response.PaymentResult
+import com.kakaopay.assignment.payment.ikim.controller.response.PaymentInquiryResponse
+import com.kakaopay.assignment.payment.ikim.service.PaymentResult
 import com.kakaopay.assignment.payment.ikim.service.CardTransactionService
 import com.kakaopay.assignment.payment.ikim.value.CardInfo
 import com.kakaopay.assignment.payment.ikim.value.PaymentAmount
@@ -37,12 +38,7 @@ class PaymentController(
     }
 
     @GetMapping("/payments/{uniqueId}")
-    fun inquire(@PathVariable uniqueId: String): PaymentResult {
-        return PaymentResult(
-            uniqueId,
-            CardInfo("1234567812345678", "1225", "510"),
-            PaymentType.PAYMENT,
-            PaymentAmount(1000),
-        )
+    fun inquire(@PathVariable uniqueId: String): PaymentInquiryResponse {
+        return service.inquirePayment(uniqueId).run { PaymentInquiryResponse(this) }
     }
 }
