@@ -1,25 +1,20 @@
 package com.kakaopay.assignment.payment.ikim.value
 
-import com.kakaopay.assignment.payment.ikim.value.PaymentAmount
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.catchThrowable
 import org.junit.jupiter.api.Test
 
-class PaymentAmountTest {
+class PaymentAmountValidationTest {
     @Test
-    fun `경계 조건 - 결제 금액 100원은 가능 & 부가세 xx원`() {
+    fun `경계 조건 - 결제 금액 100원은 가능`() {
         val x = PaymentAmount(100)
-
         assertThat(x.amount).isEqualTo(100)
-        assertThat(x.vat).isEqualTo(9)
     }
 
     @Test
-    fun `경계 조건 - 결제 금액 1억 원은 가능 & 부가세 xx원`() {
+    fun `경계 조건 - 결제 금액 1억 원은 가능`() {
         val x = PaymentAmount(100000000)
-
         assertThat(x.amount).isEqualTo(100000000)
-        assertThat(x.vat).isEqualTo(9090909)
     }
 
     @Test
