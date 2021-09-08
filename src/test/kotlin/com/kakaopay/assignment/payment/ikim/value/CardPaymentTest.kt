@@ -23,7 +23,7 @@ class CardPaymentTest {
     }
 
     @Test
-    fun `1 개월 할부는 안 돼야 하지 않나?`() { // TODO 확인 필요
+    fun `1 개월 할부는 안 돼야 하지 않나`() { // TODO 확인 필요
         val ex = catchThrowable { installmentSpecifiedCardPay(1) }
 
         assertThat(ex.message).isEqualTo("할부 개월수는 0(할부 아님) 또는 2~12만 가능합니다")
