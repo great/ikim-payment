@@ -5,9 +5,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
 class Aes256EncryptionToolTest {
-    private val key = "1234567890ABCDEF1234567890ABCDEF"
-    private val iv = "kakaopayassignmt"
-    private val sut = Aes256EncryptionTool(iv, key)
+    private val sut = Aes256EncryptionTool()
 
     @Test
     fun base64enc() {

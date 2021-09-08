@@ -1,20 +1,25 @@
 package com.kakaopay.assignment.payment.ikim.support
 
 import org.apache.commons.codec.binary.Base64
+import org.springframework.stereotype.Component
 import javax.crypto.Cipher
 import javax.crypto.spec.IvParameterSpec
 import javax.crypto.spec.SecretKeySpec
 
-class Aes256EncryptionTool(iv: String, key: String) {
+@Component
+class Aes256EncryptionTool(
+    iv: String = "kakaopayassignmt",
+    key: String = "1234567890ABCDEF1234567890ABCDEF"
+) : EncryptionTool {
     private val iv: IvParameterSpec = IvParameterSpec(iv.toByteArray())
     private val encKey = encryptor(key)
     private val decKey = decryptor(key)
 
-    fun encrypt(payload: String) = payload.toByteArray()
+    override fun encrypt(payload: String) = payload.toByteArray()
         .run { encKey.doFinal(this) }
         .run { Base64.encodeBase64String(this) }
 
-    fun decrypt(token: String) = Base64.decodeBase64(token)
+    override fun decrypt(token: String) = Base64.decodeBase64(token)
         .run { decKey.doFinal(this) }
         .run { String(this) }
 
