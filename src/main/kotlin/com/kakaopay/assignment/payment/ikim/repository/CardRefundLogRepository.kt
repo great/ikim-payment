@@ -4,5 +4,5 @@ import com.kakaopay.assignment.payment.ikim.domain.entity.CardRefundLog
 import org.springframework.data.repository.CrudRepository
 
 interface CardRefundLogRepository : CrudRepository<CardRefundLog, String> {
-    fun fundByPaidUniqueId(id: String): CardRefundLog?
+    fun findByPaidUniqueId(id: String): CardRefundLog?
 }

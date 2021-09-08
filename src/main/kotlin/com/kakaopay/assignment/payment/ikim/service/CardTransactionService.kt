@@ -42,6 +42,10 @@ class CardTransactionService(
     @Transactional
     fun requestCancel(originalUniqueId: String, cancelAmount: PaymentAmount): Pair<String, String> {
         val uniqueId = generator.next()
+        val canceled = refundLogRepository.findByPaidUniqueId(originalUniqueId)
+        if (canceled?.paidUniqueId == originalUniqueId) {
+            throw IllegalStateException("이미 취소한 거래입니다")
+        }
 
         val paid = paymentLogRepository.findByIdOrNull(originalUniqueId)
 

@@ -4,7 +4,7 @@ import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.Id
 
-@Entity(name = "card_payment_log")
+@Entity(name = "card_refund_log")
 class CardRefundLog(
     @Id
     @Column(length = 20)
