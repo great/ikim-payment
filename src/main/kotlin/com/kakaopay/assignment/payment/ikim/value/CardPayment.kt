@@ -10,6 +10,6 @@ class CardPayment(
 
     init {
         installment = installmentRaw ?: 0
-        require(installment in 0..12) { "할부 개월수는 0(할부 아님) 또는 1~12만 가능합니다" }
+        require(installment != 1 && installment in 0..12) { "할부 개월수는 0(할부 아님) 또는 2~12만 가능합니다" }
     }
 }
