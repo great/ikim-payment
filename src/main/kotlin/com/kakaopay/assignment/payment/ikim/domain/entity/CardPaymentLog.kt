@@ -3,6 +3,7 @@ package com.kakaopay.assignment.payment.ikim.domain.entity
 import com.kakaopay.assignment.payment.ikim.builder.CardPaymentData
 import com.kakaopay.assignment.payment.ikim.support.EncryptionTool
 import com.kakaopay.assignment.payment.ikim.value.CardInfo
+import com.kakaopay.assignment.payment.ikim.value.PaymentAmount
 import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.Id
@@ -26,4 +27,6 @@ class CardPaymentLog(
         val dec = encryptionTool.decrypt(encryptedCard).split("|")
         return CardInfo(dec[0], dec[1], dec[2])
     }
+
+    fun paymentAmount() = PaymentAmount(amount, vat)
 }

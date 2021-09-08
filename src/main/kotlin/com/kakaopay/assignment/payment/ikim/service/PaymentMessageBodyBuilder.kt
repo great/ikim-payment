@@ -1,9 +1,11 @@
 package com.kakaopay.assignment.payment.ikim.service
 
 import com.kakaopay.assignment.payment.ikim.builder.CardPaymentData
+import com.kakaopay.assignment.payment.ikim.builder.CardRefundData
 import com.kakaopay.assignment.payment.ikim.controller.parameter.PayRequest
 import com.kakaopay.assignment.payment.ikim.controller.parameter.cardInfo
 import com.kakaopay.assignment.payment.ikim.controller.parameter.cardPayment
+import com.kakaopay.assignment.payment.ikim.domain.entity.CardPaymentLog
 import com.kakaopay.assignment.payment.ikim.support.leftPaddingWithBlank
 import com.kakaopay.assignment.payment.ikim.support.leftPaddingWithZero
 import com.kakaopay.assignment.payment.ikim.support.rightPaddingWithBlank
@@ -17,7 +19,7 @@ object PaymentMessageBodyBuilder {
     private val UNIQUE_ID_PLACEHOLDER = " ".repeat(20)
     private val RESERVED = " ".repeat(47)
 
-    fun paidMessageBody(cardData: CardPaymentData): String {
+    fun payMessageBody(cardData: CardPaymentData): String {
         return StringBuilder()
             .append(cardData.cardNo.rightPaddingWithBlank(DATA_SIZE_CARD))
             .append(cardData.installment.leftPaddingWithZero(DATA_SIZE_INSTALLMENT))
@@ -32,7 +34,17 @@ object PaymentMessageBodyBuilder {
     }
 
     // TODO uniqueId 길이를 검증하도록 해야...
-    fun refundData(originalUniqueId: String): String {
-        TODO("not yet implemented")
+    fun refundMessageBody(refund: CardRefundData): String {
+        return StringBuilder()
+            .append(refund.cardNo.rightPaddingWithBlank(DATA_SIZE_CARD))
+            .append("00")
+            .append(refund.expiry)
+            .append(refund.cvc)
+            .append(refund.amount.leftPaddingWithBlank(DATA_SIZE_AMOUNT))
+            .append(refund.vat.leftPaddingWithBlank(DATA_SIZE_VAT))
+            .append(refund.originalUniqueId)
+            .append(refund.encryptedCardInfo.rightPaddingWithBlank(DATA_SIZE_ENCRYPTED))
+            .append(RESERVED)
+            .toString()
     }
 }

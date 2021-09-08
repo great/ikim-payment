@@ -14,7 +14,7 @@ class PaymentMessageBuilderTest {
 
     @Test
     fun verifyMessageSizeProperlyAssigned() {
-        val message = PaymentMessageBuilder.paidWithHeader(id, body)
+        val message = PaymentMessageBuilder.messageWithHeader(id, body)
         assertThat(message).startsWith((typeLength + idLength + body.length).leftPaddingWithBlank(dataLength))
         assertThat(message.length).isEqualTo(dataLength + typeLength + idLength + body.length)
     }

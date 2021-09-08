@@ -2,6 +2,7 @@ package com.kakaopay.assignment.payment.ikim.controller
 
 import com.kakaopay.assignment.payment.ikim.controller.parameter.PayRequest
 import com.kakaopay.assignment.payment.ikim.controller.parameter.RefundRequest
+import com.kakaopay.assignment.payment.ikim.controller.parameter.cancelAmount
 import com.kakaopay.assignment.payment.ikim.controller.parameter.cardInfo
 import com.kakaopay.assignment.payment.ikim.controller.parameter.cardPayment
 import com.kakaopay.assignment.payment.ikim.controller.response.BaseResponse
@@ -31,7 +32,8 @@ class PaymentController(
 
     @PostMapping("/refund")
     fun refund(@RequestBody body: RefundRequest): BaseResponse {
-        return BaseResponse("abcd", "XXXXXXXXXXXXXYYYYYZZZZREFUND")
+        val (x, y) = service.requestCancel(body.uniqueId, body.cancelAmount())
+        return BaseResponse("$x", "$y")
     }
 
     @GetMapping("/payments/{uniqueId}")

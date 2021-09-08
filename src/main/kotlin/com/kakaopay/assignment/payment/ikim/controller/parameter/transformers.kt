@@ -7,3 +7,4 @@ import com.kakaopay.assignment.payment.ikim.value.PaymentAmount
 fun PayRequest.cardInfo() = CardInfo(this.cardNo, this.cardExpirationDigit, this.cvc)
 fun PayRequest.cardPayment() = CardPayment(PaymentAmount(this.amount, this.vat), this.installment)
 
+fun RefundRequest.cancelAmount() = PaymentAmount(this.cancelAmount, this.vat)

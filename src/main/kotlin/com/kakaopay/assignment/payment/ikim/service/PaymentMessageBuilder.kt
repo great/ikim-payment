@@ -9,7 +9,7 @@ object PaymentMessageBuilder {
     private const val TYPE_LENGTH = 10
     private const val UNIQUE_ID_LENGTH = 20
 
-    fun paidWithHeader(uniqueId: String, body: String): String {
+    fun messageWithHeader(uniqueId: String, body: String): String {
         val len = body.length + TYPE_LENGTH + UNIQUE_ID_LENGTH
         return StringBuilder()
             .append(len.leftPaddingWithBlank(DATA_LENGTH))
