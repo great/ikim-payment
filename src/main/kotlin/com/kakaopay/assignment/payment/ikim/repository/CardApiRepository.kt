@@ -5,7 +5,4 @@ import org.springframework.data.jpa.repository.Lock
 import org.springframework.data.repository.CrudRepository
 import javax.persistence.LockModeType
 
-interface CardApiRepository : CrudRepository<CardPaymentApi, String> {
-    @Lock(LockModeType.PESSIMISTIC_WRITE)
-    fun findByUniqueId(uniqueId: String): CardPaymentApi?
-}
+interface CardApiRepository : CrudRepository<CardPaymentApi, String>

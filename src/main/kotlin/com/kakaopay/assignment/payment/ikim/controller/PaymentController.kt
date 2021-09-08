@@ -2,6 +2,8 @@ package com.kakaopay.assignment.payment.ikim.controller
 
 import com.kakaopay.assignment.payment.ikim.controller.parameter.PayRequest
 import com.kakaopay.assignment.payment.ikim.controller.parameter.RefundRequest
+import com.kakaopay.assignment.payment.ikim.controller.parameter.cardInfo
+import com.kakaopay.assignment.payment.ikim.controller.parameter.cardPayment
 import com.kakaopay.assignment.payment.ikim.controller.response.BaseResponse
 import com.kakaopay.assignment.payment.ikim.controller.response.PaymentResult
 import com.kakaopay.assignment.payment.ikim.service.CardTransactionService
@@ -20,7 +22,10 @@ class PaymentController(
 ) {
     @PostMapping("/pay")
     fun pay(@RequestBody body: PayRequest): BaseResponse {
-        val (x, y) = service.requestPayment(body)
+        val card = body.cardInfo()
+        val payment = body.cardPayment()
+
+        val (x, y) = service.requestPay(card, payment)
         return BaseResponse("$x", "$y")
     }
 
