@@ -1,4 +1,4 @@
-package com.kakaopay.assignment.payment.ikim.support
+package com.kakaopay.assignment.payment.ikim.component
 
 import org.apache.commons.codec.binary.Base64
 import org.springframework.stereotype.Component

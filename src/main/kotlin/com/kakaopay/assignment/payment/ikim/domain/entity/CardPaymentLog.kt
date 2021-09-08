@@ -1,9 +1,13 @@
 package com.kakaopay.assignment.payment.ikim.domain.entity
 
 import com.kakaopay.assignment.payment.ikim.builder.CardPaymentData
-import com.kakaopay.assignment.payment.ikim.support.EncryptionTool
+import com.kakaopay.assignment.payment.ikim.component.EncryptionTool
 import com.kakaopay.assignment.payment.ikim.value.CardInfo
 import com.kakaopay.assignment.payment.ikim.value.PaymentAmount
+import org.springframework.data.annotation.CreatedDate
+import org.springframework.data.annotation.LastModifiedDate
+import java.time.Instant
+import java.time.LocalDateTime
 import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.Id
@@ -18,10 +22,18 @@ class CardPaymentLog(
     val encryptedCard: String,
 
     val amount: Int,
+
     val vat: Int,
-    val installment: Int
+
+    val installment: Int,
+
+    @CreatedDate
+    val createdAt: Instant,
+
+    @LastModifiedDate
+    var updatedAt: Instant
 ) {
-    constructor(uniqueId: String, c: CardPaymentData) : this(uniqueId, c.encryptedCardInfo, c.amount, c.vat, c.installment)
+    constructor(uniqueId: String, c: CardPaymentData, now: Instant) : this(uniqueId, c.encryptedCardInfo, c.amount, c.vat, c.installment, now, now)
 
     fun cardInfoUsing(encryptionTool: EncryptionTool): CardInfo {
         val dec = encryptionTool.decrypt(encryptedCard).split("|")

@@ -2,20 +2,21 @@ package com.kakaopay.assignment.payment.ikim.service
 
 import com.kakaopay.assignment.payment.ikim.builder.CardPaymentData
 import com.kakaopay.assignment.payment.ikim.builder.CardRefundData
+import com.kakaopay.assignment.payment.ikim.component.EncryptionTool
+import com.kakaopay.assignment.payment.ikim.component.IdGenerationTool
 import com.kakaopay.assignment.payment.ikim.domain.entity.CardPaymentApi
 import com.kakaopay.assignment.payment.ikim.domain.entity.CardPaymentLog
 import com.kakaopay.assignment.payment.ikim.domain.entity.CardRefundLog
 import com.kakaopay.assignment.payment.ikim.repository.CardApiRepository
 import com.kakaopay.assignment.payment.ikim.repository.CardPaymentLogRepository
 import com.kakaopay.assignment.payment.ikim.repository.CardRefundLogRepository
-import com.kakaopay.assignment.payment.ikim.support.EncryptionTool
-import com.kakaopay.assignment.payment.ikim.support.IdGenerationTool
 import com.kakaopay.assignment.payment.ikim.value.CardInfo
 import com.kakaopay.assignment.payment.ikim.value.CardPayment
 import com.kakaopay.assignment.payment.ikim.value.PaymentAmount
 import com.kakaopay.assignment.payment.ikim.value.PaymentType
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
+import java.time.Clock
 import javax.transaction.Transactional
 
 @Service
@@ -24,17 +25,19 @@ class CardTransactionService(
     private val paymentLogRepository: CardPaymentLogRepository,
     private val refundLogRepository: CardRefundLogRepository,
     private val generator: IdGenerationTool,
-    private val encryptionTool: EncryptionTool
+    private val encryptionTool: EncryptionTool,
+    private val clock: Clock
 ) {
     @Transactional
     fun requestPay(card: CardInfo, payment: CardPayment): Pair<String, String> {
         val cardData = CardPaymentData(card, payment, encryptionTool)
         val uniqueId = generator.next()
+        val now = clock.instant()
 
         val body = PaymentMessageBodyBuilder.payMessageBody(cardData)
         val message = PaymentMessageBuilder.messageWithHeader(uniqueId, body)
-        val transaction = apiRepository.save(CardPaymentApi(uniqueId, PaymentType.PAYMENT, message))
-            .also { paymentLogRepository.save(CardPaymentLog(uniqueId, cardData)) }
+        val transaction = apiRepository.save(CardPaymentApi.pay(uniqueId, message, now))
+            .also { paymentLogRepository.save(CardPaymentLog(uniqueId, cardData, now)) }
 
         return uniqueId to transaction.message
     }
@@ -42,6 +45,7 @@ class CardTransactionService(
     @Transactional
     fun requestCancel(originalUniqueId: String, cancelAmount: PaymentAmount): Pair<String, String> {
         val uniqueId = generator.next()
+        val now = clock.instant()
 
         val canceled = refundLogRepository.findByPaidUniqueId(originalUniqueId)
         if (canceled?.paidUniqueId == originalUniqueId) {
@@ -56,8 +60,8 @@ class CardTransactionService(
         val refund = CardRefundData(paid, paid.cardInfoUsing(encryptionTool))
         val body = PaymentMessageBodyBuilder.refundMessageBody(refund)
         val message = PaymentMessageBuilder.messageWithHeader(uniqueId, body)
-        val transaction = apiRepository.save(CardPaymentApi(uniqueId, PaymentType.CANCEL, message))
-            .also { refundLogRepository.save(CardRefundLog(uniqueId, paid.uniqueId)) }
+        val transaction = apiRepository.save(CardPaymentApi.refund(uniqueId, message, now))
+            .also { refundLogRepository.save(CardRefundLog(uniqueId, paid.uniqueId, now, now)) }
 
         return uniqueId to transaction.message
     }

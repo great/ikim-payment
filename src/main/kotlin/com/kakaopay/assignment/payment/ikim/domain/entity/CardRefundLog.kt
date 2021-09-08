@@ -1,5 +1,8 @@
 package com.kakaopay.assignment.payment.ikim.domain.entity
 
+import org.springframework.data.annotation.CreatedDate
+import org.springframework.data.annotation.LastModifiedDate
+import java.time.Instant
 import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.Id
@@ -12,4 +15,10 @@ class CardRefundLog(
 
     @Column(length = 20)
     val paidUniqueId: String,
+
+    @CreatedDate
+    val createdAt: Instant,
+
+    @LastModifiedDate
+    var updatedAt: Instant
 )

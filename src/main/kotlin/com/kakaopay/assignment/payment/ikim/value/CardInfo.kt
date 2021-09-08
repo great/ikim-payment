@@ -1,6 +1,6 @@
 package com.kakaopay.assignment.payment.ikim.value
 
-import com.kakaopay.assignment.payment.ikim.support.EncryptionTool
+import com.kakaopay.assignment.payment.ikim.component.EncryptionTool
 import com.kakaopay.assignment.payment.ikim.support.isNumeric
 
 class CardInfo(
