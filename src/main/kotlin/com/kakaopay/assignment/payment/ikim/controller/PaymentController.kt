@@ -7,11 +7,7 @@ import com.kakaopay.assignment.payment.ikim.controller.parameter.cardInfo
 import com.kakaopay.assignment.payment.ikim.controller.parameter.cardPayment
 import com.kakaopay.assignment.payment.ikim.controller.response.BaseResponse
 import com.kakaopay.assignment.payment.ikim.controller.response.PaymentInquiryResponse
-import com.kakaopay.assignment.payment.ikim.service.PaymentResult
 import com.kakaopay.assignment.payment.ikim.service.CardTransactionService
-import com.kakaopay.assignment.payment.ikim.value.CardInfo
-import com.kakaopay.assignment.payment.ikim.value.PaymentAmount
-import com.kakaopay.assignment.payment.ikim.value.PaymentType
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping

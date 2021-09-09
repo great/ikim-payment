@@ -20,13 +20,15 @@ repositories {
 
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-web:2.5.4")
-	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-	implementation("com.h2database:h2")
+	implementation("org.springframework.boot:spring-boot-starter-data-jpa:2.5.4")
+	implementation("com.h2database:h2:1.4.200")
 	implementation("com.zaxxer:HikariCP:5.0.0")
-	implementation("commons-codec:commons-codec")
+	implementation("commons-codec:commons-codec:1.15")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 	testImplementation("org.springframework.boot:spring-boot-starter-test:2.5.4")
+	testImplementation("com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0")
+
 }
 
 tasks.withType<KotlinCompile> {

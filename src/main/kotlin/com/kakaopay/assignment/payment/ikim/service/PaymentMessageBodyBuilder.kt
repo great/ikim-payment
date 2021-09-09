@@ -2,10 +2,6 @@ package com.kakaopay.assignment.payment.ikim.service
 
 import com.kakaopay.assignment.payment.ikim.builder.CardPaymentData
 import com.kakaopay.assignment.payment.ikim.builder.CardRefundData
-import com.kakaopay.assignment.payment.ikim.controller.parameter.PayRequest
-import com.kakaopay.assignment.payment.ikim.controller.parameter.cardInfo
-import com.kakaopay.assignment.payment.ikim.controller.parameter.cardPayment
-import com.kakaopay.assignment.payment.ikim.domain.entity.CardPaymentLog
 import com.kakaopay.assignment.payment.ikim.support.leftPaddingWithBlank
 import com.kakaopay.assignment.payment.ikim.support.leftPaddingWithZero
 import com.kakaopay.assignment.payment.ikim.support.rightPaddingWithBlank

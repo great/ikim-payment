@@ -7,6 +7,8 @@ import com.kakaopay.assignment.payment.ikim.component.IdGenerationTool
 import com.kakaopay.assignment.payment.ikim.domain.entity.CardPaymentApi
 import com.kakaopay.assignment.payment.ikim.domain.entity.CardPaymentLog
 import com.kakaopay.assignment.payment.ikim.domain.entity.CardRefundLog
+import com.kakaopay.assignment.payment.ikim.lock.CardTransactionLock
+import com.kakaopay.assignment.payment.ikim.lock.CardTransactionLockRepository
 import com.kakaopay.assignment.payment.ikim.repository.CardApiRepository
 import com.kakaopay.assignment.payment.ikim.repository.CardPaymentLogRepository
 import com.kakaopay.assignment.payment.ikim.repository.CardRefundLogRepository
@@ -21,6 +23,7 @@ import javax.transaction.Transactional
 
 @Service
 class CardTransactionService(
+    private val lockRepository: CardTransactionLockRepository,
     private val apiRepository: CardApiRepository,
     private val paymentLogRepository: CardPaymentLogRepository,
     private val refundLogRepository: CardRefundLogRepository,
@@ -30,16 +33,23 @@ class CardTransactionService(
 ) {
     @Transactional
     fun requestPay(card: CardInfo, payment: CardPayment): Pair<String, String> {
-        val cardData = CardPaymentData(card, payment, encryptionTool)
         val uniqueId = generator.next()
-        val now = clock.instant()
+        val lock = CardTransactionLock(lockRepository)
+        val tx = lock.acquire(card.cardNo, uniqueId)
 
-        val body = PaymentMessageBodyBuilder.payMessageBody(cardData)
-        val message = PaymentMessageBuilder.messageWithHeader(uniqueId, body)
-        val transaction = apiRepository.save(CardPaymentApi.pay(uniqueId, message, now))
-            .also { paymentLogRepository.save(CardPaymentLog(uniqueId, cardData, now)) }
+        try {
+            val cardData = CardPaymentData(card, payment, encryptionTool)
+            val now = clock.instant()
 
-        return uniqueId to transaction.message
+            val body = PaymentMessageBodyBuilder.payMessageBody(cardData)
+            val message = PaymentMessageBuilder.messageWithHeader(uniqueId, body)
+            val transaction = apiRepository.save(CardPaymentApi.pay(uniqueId, message, now))
+                .also { paymentLogRepository.save(CardPaymentLog(uniqueId, cardData, now)) }
+
+            return uniqueId to transaction.message
+        } finally {
+            lock.release(tx)
+        }
     }
 
     @Transactional
@@ -57,13 +67,20 @@ class CardTransactionService(
             throw IllegalArgumentException("취소 요청한 금액/부가세가 결제 정보와 일치하지 않습니다.")
         }
 
-        val refund = CardRefundData(paid, paid.cardInfoUsing(encryptionTool))
-        val body = PaymentMessageBodyBuilder.refundMessageBody(refund)
-        val message = PaymentMessageBuilder.messageWithHeader(uniqueId, body)
-        val transaction = apiRepository.save(CardPaymentApi.refund(uniqueId, message, now))
-            .also { refundLogRepository.save(CardRefundLog(uniqueId, paid.uniqueId, now, now)) }
+        val lock = CardTransactionLock(lockRepository)
+        val tx = lock.acquire(paid.cardInfoUsing(encryptionTool).cardNo, uniqueId)
 
-        return uniqueId to transaction.message
+        try {
+            val refund = CardRefundData(paid, paid.cardInfoUsing(encryptionTool))
+            val body = PaymentMessageBodyBuilder.refundMessageBody(refund)
+            val message = PaymentMessageBuilder.messageWithHeader(uniqueId, body)
+            val transaction = apiRepository.save(CardPaymentApi.refund(uniqueId, message, now))
+                .also { refundLogRepository.save(CardRefundLog(uniqueId, paid.uniqueId, now, now)) }
+
+            return uniqueId to transaction.message
+        } finally {
+            lock.release(tx)
+        }
     }
 
     @Transactional

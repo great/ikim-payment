@@ -4,7 +4,6 @@ import com.kakaopay.assignment.payment.ikim.value.PaymentType
 import org.springframework.data.annotation.CreatedDate
 import org.springframework.data.annotation.LastModifiedDate
 import java.time.Instant
-import java.time.LocalDateTime
 import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.EnumType

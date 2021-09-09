@@ -2,7 +2,7 @@ package com.kakaopay.assignment.payment.ikim.value
 
 class CardPayment(
     paymentAmount: PaymentAmount,
-    installmentRaw: Int?
+    installmentRaw: Int? = null
 ) {
     val amount = paymentAmount.amount
     val vat = paymentAmount.vat
