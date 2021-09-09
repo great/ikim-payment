@@ -3,6 +3,7 @@ package kim.intae.assignment.payment.service
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.given
 import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.never
 import com.nhaarman.mockitokotlin2.verify
 import kim.intae.assignment.payment.component.FrozenClock
 import kim.intae.assignment.payment.domain.entity.CardPaymentApi
@@ -17,7 +18,9 @@ import kim.intae.assignment.payment.value.CardInfo
 import kim.intae.assignment.payment.value.CardPayment
 import kim.intae.assignment.payment.value.PaymentAmount
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.catchThrowable
 import org.junit.jupiter.api.Test
+import java.util.Optional
 
 class PaymentCaseTest {
     private val cardNo = "1234567823456789"
@@ -62,5 +65,21 @@ class PaymentCaseTest {
         verify(apiRepository).save(any())
         verify(paymentLogRepository).save(any())
         verify(lockRepository).delete(any())
+    }
+
+    @Test
+    fun `중복 결제 방지`() {
+        val onGoingTransaction = NaiveCardTransaction(cardNo, "onGoingTxKey00000001")
+        given(lockRepository.findById(cardNo)).willReturn(Optional.of(onGoingTransaction))
+
+        val ex = catchThrowable { sut.requestPay(card, payment) }
+
+        assertThat(ex.message).isEqualTo("다른 거래 건을 처리 중이니 잠시 후 다시 시도하시기 바랍니다.")
+
+        verify(lockRepository).findById(cardNo)
+        verify(lockRepository, never()).save(any())
+        verify(apiRepository, never()).save(any())
+        verify(paymentLogRepository, never()).save(any())
+        verify(lockRepository, never()).delete(any())
     }
 }
