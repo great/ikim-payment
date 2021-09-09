@@ -15,7 +15,7 @@ import org.springframework.web.servlet.NoHandlerFoundException
 import java.security.InvalidParameterException
 import javax.persistence.EntityNotFoundException
 
-@RestControllerAdvice(annotations = [RestController::class], basePackages = ["com.kakaopay.assignment.payment.ikim"])
+@RestControllerAdvice(annotations = [RestController::class], basePackages = ["kim.intae.assignment.payment"])
 class RestControllerExceptionHandler {
     @ExceptionHandler(value = [
         JsonParseException::class,
